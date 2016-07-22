@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>user_control_node</name>
+  <name>vision_control</name>
   <version>0.0.0</version>
-  <description>The user_control_node package</description>
+  <description>The vision_control_node package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
