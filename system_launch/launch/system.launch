@@ -1,0 +1,19 @@
+<!--
+-->
+
+<launch>
+
+	<!--Start camera -->
+	<include file="$(find camera_launch)/launch/camera_640x480.launch"/>
+
+	<!--Start vision perception node -->
+	<node name="perception_vision" pkg="perception_vision" type="perception_vision" output="screen" >
+	<param name="image_transport" value="compressed" />
+	</node>
+
+	<!--Start android control node -->
+	<node name="android_control" pkg="android_control" type="android_control" output="screen" >
+	</node>
+
+
+</launch>
