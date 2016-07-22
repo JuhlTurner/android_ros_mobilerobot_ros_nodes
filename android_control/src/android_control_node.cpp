@@ -28,7 +28,6 @@ void joyStickInput_cb(const sensor_msgs::Joy::ConstPtr& msg){
     angle = angle - 1.57079633;
     if(x<0.0)
         angle = 0 -angle;
-    ROS_INFO("Speed: %f, Angle: %f",y,angle);
     if((float)angle != (float)angle)
         angle = 0.0;
     geometry_msgs::Twist Twistmsg;
@@ -43,8 +42,8 @@ void joyStickInput_cb(const sensor_msgs::Joy::ConstPtr& msg){
 
 int main(int argc, char **argv)
 {
-    ROS_INFO("Launching user_control_node");
-    ros::init(argc, argv, "user_control_node");
+    ROS_INFO("Starting android control node");
+    ros::init(argc, argv, "Android_control_node");
     ros::NodeHandle nh;
     ros::Rate rate(updateRate);
     sub_joyStickInput = nh.subscribe<sensor_msgs::Joy>("android/joyStick", 1, joyStickInput_cb);
@@ -55,6 +54,6 @@ int main(int argc, char **argv)
       rate.sleep();
     }
 	
-    ROS_INFO("Terminating user_control_node");
+    ROS_INFO("Terminating android control node");
     return 0;
 }
