@@ -15,6 +15,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv/cv.h>
 
+
+//launch with "rosrun vision_control vision_control _image_transport:=compressed" to use the compressed image
+//see more at : http://wiki.ros.org/image_transport/Tutorials/ExaminingImagePublisherSubscriber
 using namespace cv;
 using namespace std;
 
@@ -30,8 +33,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
   {
     //cv::imshow("view", cv_bridge::toCvShare(msg, "bgr8")->image);
     cv::Mat test;
-    //test = cv_bridge::toCvCopy(msg, "bgr8")->image;
-
+    test = cv_bridge::toCvCopy(msg, "bgr8")->image;
+    cv::imshow("view",test);
 
     cv::waitKey(30);
   }
@@ -43,20 +46,21 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 
 int main(int argc, char **argv)
 {
-    ROS_INFO("Launching vision_control_node");
+    ROS_INFO("Starting vision perception node");
     ros::init(argc, argv, "vision_control_node");
     ros::NodeHandle nh;
 
-    //cv::namedWindow("view");
+    cv::namedWindow("view");
     cv::startWindowThread();
     cv::Mat test;
 
     image_transport::ImageTransport it(nh);
-    sub_image = it.subscribe("camera/image_raw/compressed", 1, imageCallback);
+
+    sub_image = it.subscribe("camera/image_raw", 1, imageCallback);
     pub_commandTwist = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel",1);
 
     ros::spin();
 	
-    ROS_INFO("Terminating vision_control_node");
+    ROS_INFO("Terminating vision perception node");
     return 0;
 }

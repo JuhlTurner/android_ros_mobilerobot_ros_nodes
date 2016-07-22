@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>vision_control</name>
+  <name>perception_vision</name>
   <version>0.0.0</version>
-  <description>The vision_control_node package</description>
+  <description>The perception_vision_node package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
