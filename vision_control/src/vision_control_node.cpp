@@ -6,55 +6,57 @@
  */
 #include <math.h>
 #include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
 #include <geometry_msgs/Twist.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv/cv.h>
 
-#define updateRate 20.0
-
+using namespace cv;
+using namespace std;
 
 double x = 0.0, y = 0.0;
 ros::Publisher pub_commandTwist;
-ros::Subscriber sub_joyStickInput;
+image_transport::Subscriber sub_image;
 
 using namespace std;
 
-void joyStickInput_cb(const sensor_msgs::Joy::ConstPtr& msg){
-    x = msg->axes[0];
-    y = msg->axes[1];
+void imageCallback(const sensor_msgs::ImageConstPtr& msg)
+{
+  try
+  {
+    //cv::imshow("view", cv_bridge::toCvShare(msg, "bgr8")->image);
+    cv::Mat test;
+    //test = cv_bridge::toCvCopy(msg, "bgr8")->image;
 
-    double dist = sqrt(pow(x,2) + pow(y,2));
-    double tmp = (y*sin(90.0*0.01745329252))/dist;
-    double angle = asin(tmp);
-    angle = angle - 1.57079633;
-    if(x<0.0)
-        angle = 0 -angle;
-    ROS_INFO("Speed: %f, Angle: %f",y,angle);
-    if((float)angle != (float)angle)
-        angle = 0.0;
-    geometry_msgs::Twist Twistmsg;
-    Twistmsg.linear.x = y;
-    Twistmsg.linear.y = 0.0;
-    Twistmsg.linear.z = 0.0;
-    Twistmsg.angular.x = 0.0;
-    Twistmsg.angular.y = 0.0;
-    Twistmsg.angular.z = angle;
-    pub_commandTwist.publish(Twistmsg);
+
+    cv::waitKey(30);
+  }
+  catch (cv_bridge::Exception& e)
+  {
+    ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
+  }
 }
 
 int main(int argc, char **argv)
 {
-    ROS_INFO("Launching user_control_node");
-    ros::init(argc, argv, "user_control_node");
+    ROS_INFO("Launching vision_control_node");
+    ros::init(argc, argv, "vision_control_node");
     ros::NodeHandle nh;
-    ros::Rate rate(updateRate);
-    sub_joyStickInput = nh.subscribe<sensor_msgs::Joy>("android/joyStick", 1, joyStickInput_cb);
+
+    //cv::namedWindow("view");
+    cv::startWindowThread();
+    cv::Mat test;
+
+    image_transport::ImageTransport it(nh);
+    sub_image = it.subscribe("camera/image_raw/compressed", 1, imageCallback);
     pub_commandTwist = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel",1);
-    while(nh.ok())
-    {
-      ros::spinOnce();                   // Handle ROS events
-      rate.sleep();
-    }
+
+    ros::spin();
 	
-    ROS_INFO("Terminating user_control_node");
+    ROS_INFO("Terminating vision_control_node");
     return 0;
 }
